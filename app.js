@@ -3,6 +3,10 @@ var express      = require("express"),
 	mongoose	 = require("mongoose"),
 	methodOverride= require("method-override"),
 	expressSanitizer = require("express-sanitizer"),
+	passport		= require("passport"),
+	LocalStrategy	= require("passport-local"),
+	User			= require("./models/user"),
+	passportLocalMongoose = require("passport-local-mongoose"),
 	app 		 = express();
 //APP CONFUG
 mongoose.connect("mongodb://localhost/restful_blog_app");
@@ -21,6 +25,29 @@ var blogSchema = new mongoose.Schema({
 });
 
 var Blog = mongoose.model("Blog", blogSchema); 
+
+//PASSPORT CONFIGURATION
+
+
+app.use(require("express-session")({
+	secret: "testing",
+	resave: false,
+	saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+ 
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
+
+app.use(function(req , res , next){
+	res.locals.currentUser = req.user;
+	next();
+});
+
 
 //RESTFUL ROUTES    
 
@@ -41,7 +68,7 @@ app.get("/blogs", function(req, res){
 });
 
 //NEW ROUTE
-app.get("/blogs/new", function(req, res){
+app.get("/blogs/new",isLoggedIn, function(req, res){
 	res.render("new");
 });
 
@@ -104,6 +131,58 @@ app.delete("/blogs/:id", function(req,res){
 	});
 });
 
+
+
+//AUTH ROUTES
+
+//show register form
+app.get("/register", function(req, res){
+	res.render("register");
+});
+//handle sign up logic
+app.post("/register" , function(req , res){
+var newUser = new User({username: req.body.username});
+User.register(newUser, req.body.password, function(err , user){
+	if(err){
+		console.log(err);
+		return res.render("register");
+	}
+	passport.authenticate("local")(req , res , function(){
+		res.redirect("/blogs");
+	});
+});
+});
+
+// show login page
+app.get("/login" , function(req , res){
+	res.render("login");
+});
+
+//handle login logic
+app.post("/login" ,passport.authenticate("local",
+	{  
+		successRedirect: "/blogs",
+		failureRedirect: "/login"
+
+	}) ,function(req , res){
+
+});
+
+
+
+//logout route
+app.get("/logout" , function(req, res){
+	req.logout();
+	res.redirect("/blogs");
+});
+
+function isLoggedIn(req , res, next){
+	if(req.isAuthenticated()){
+		return next();
+	} 
+	res.redirect("/login");
+	
+} 
 
 
 
