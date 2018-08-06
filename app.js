@@ -9,7 +9,7 @@ var express      = require("express"),
 	passportLocalMongoose = require("passport-local-mongoose"),
 	app 		 = express();
 //APP CONFUG
-mongoose.connect("mongodb://localhost/restful_blog_app");
+mongoose.connect("mongodb://g_kishan:jarvish1.0@ds113482.mlab.com:13482/blog-app-database");
 app.set("view engine" , "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
