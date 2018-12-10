@@ -1,6 +1,6 @@
 # Blog-App #
 
-Always wanted to write good blogs. Well here is a place to share blogs, videos and much more.
+ This app provides a place to share blogs, videos and much more for those who want to share good blogs.
 
 Based on Node.js with MongoDb as database.
 The CSS framework used is Semantic-UI
