@@ -1,31 +1,57 @@
 <% include ./partials/header %>
 
 
-<div class="ui main text container segment">
-	<div class="ui huge header"><%= blog.title%></div>
+    <div class="ui main text container segment">
+        <div class="ui huge header">
+            <%= blog.title%>
+        </div>
+        <div class="ui top attached">
+            <div class="item">
+                <img class="ui centered rounded image" src="<%= blog.image %> ">
 
-	<div class="ui top attached">
-		<div class= "item">
-			<img class="ui centered rounded image" src = "<%= blog.image%>" >
-
-			<div class="content">
-			<span> 
+                <div class="content">
+                    <span> 
 			<%= blog.created.toDateString() %> </span>
-			</div>
-			<div class="description">
-				<p> <%- blog.body %> </p>
-			</div>
-			<a class="ui basic orange button" href="/blogs/<%=blog._id%>/edit">Edit</a>
+                </div>
+                <div class="description">
+                    <p>
+                        <%- blog.description %>
+                    </p>
+                </div>
 
-			<form id="delete" action="/blogs/<%=blog._id%>?_method=DELETE" method="POST">
-				<button class="ui red basic button">Delete</button>
-			</form>
+                <div>
+                    Submitted by
+                    <p> <em><%= blog.author.username %> </em></p>
+                </div>
+                <a class="ui basic orange button" href="/blogs/<%=blog._id%>/edit">Edit</a>
 
-		</div> 
+                <form id="delete" action="/blogs/<%=blog._id%>?_method=DELETE" method="POST">
+                    <button class="ui red basic button">Delete</button>
+                </form>
 
-	</div>
+                <a class="ui green basic button " href="/blogs/<%= blog._id %>/comments/new ">add new comment</a>
 
-</div>
+            </div>
+
+            <div>
+                <% blog.comments.forEach(function(comment){ %>
+                    <p> <strong><%= comment.author.username %></strong> -
+                        <%= comment.text %>
+                    </p>
+                    <a class="ui small orange button" href="/blogs/<%= blog._id %>/comments/<%= comment._id %>/edit "> Edit </a>
+                    <form action="/blogs/<%= blog._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                        <button id="delete" class="ui small red button" value="Delete">Delete</button>
+                    </form>
+                    <% }) %>
 
 
-<% include ./partials/footer%>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+    <% include ./partials/footer%>
